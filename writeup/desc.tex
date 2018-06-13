@@ -17,14 +17,6 @@
 
 Each neuron's potential is described as a second order ODE:
 
-$$
-V''(t) = -aV(t) + abs(V'(t)) exp(1/V(t)) + 
-b \mathbbm{1}_{V(t) > \alpha_1}\mathbbm{1}_{V(t) < \alpha_2}\mathbbm{1}_{V'(t) > 0} + 
--b \mathbbm{1}_{V(t) > \alpha_2} + 
-b \mathbbm{1}_{V(t) > \alpha_1}\mathbbm{1}_{V(t) < \alpha_2}\mathbbm{1}_{V'(t) > 0} + 
-$$
-
-
 \begin{equation} \label{eq1}
 \begin{split}
 V''(t) & = -aV(t) + \\
