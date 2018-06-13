@@ -1,0 +1,51 @@
+%        File: desc.tex
+%     Created: Tue Jun 12 08:00 PM 2018 C
+% Last Change: Tue Jun 12 08:00 PM 2018 C
+%
+\documentclass[a4paper]{article}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{bbm}
+
+\title{A Prototype Spiking Neural Network}
+\author{Nathan Wycoff}
+
+\begin{document}
+\maketitle
+
+\section{Model Description}
+
+Each neuron's potential is described as a second order ODE:
+
+$$
+V''(t) = -aV(t) + abs(V'(t)) exp(1/V(t)) + 
+b \mathbbm{1}_{V(t) > \alpha_1}\mathbbm{1}_{V(t) < \alpha_2}\mathbbm{1}_{V'(t) > 0} + 
+-b \mathbbm{1}_{V(t) > \alpha_2} + 
+b \mathbbm{1}_{V(t) > \alpha_1}\mathbbm{1}_{V(t) < \alpha_2}\mathbbm{1}_{V'(t) > 0} + 
+$$
+
+
+\begin{equation} \label{eq1}
+\begin{split}
+V''(t) & = -aV(t) + \\
+& |V'(t)| \exp(1/V(t))  + \\
+ & b \mathbbm{1}_{V(t) > \alpha_1}\mathbbm{1}_{V(t) < \alpha_2}\mathbbm{1}_{V'(t) > 0} + \\
+& -b \mathbbm{1}_{V(t) > \alpha_2} + \\
+& -b \mathbbm{1}_{V(t) > \alpha_1} + \mathbbm{1}_{V'(t) < 0}
+\end{split}
+\end{equation}
+
+Each line describes a separate component of the model. 
+
+The first line tells us that the potential decays if there is no input from presynaptic neurons.
+
+The second line causes acceleration if the potential gets too close to zero. The idea is that we don't want to potential to every cross below 0.
+
+The third line causes acceleration when the potential crosses the threshold ($\alpha_1$).
+
+The fourth line decelerates when the potential reaches the peak ($\alpha_2$).
+
+The fifth line continues the deceleration throughout the spiking region (between $\alpha_1$ and $\alpha_2$).
+
+
+\end{document}

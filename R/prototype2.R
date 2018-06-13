@@ -24,8 +24,8 @@ v <- 5
 ys <- rep(NA, length(ts))
 vs <- rep(NA, length(ts))
 
-alpha_1 = 5
-alpha_2 = 10
+alpha_1 <- 5
+alpha_2 <- 10
 alpha_3 <- 0
 
 
