@@ -13,6 +13,31 @@
 \begin{document}
 \maketitle
 
+\section{Existing Models}
+
+\subsection{The Leaky Integrate and Fire Neuron}
+
+The leaky linear integrate and fire neuron (LIF) is a first order system of ODE's:
+
+$$
+V_i' = -aV_i + I_i(t); i \in \{1, \ldots, h\}
+$$
+
+There is also a ``reset condition": if $V_i (\hat{t})= v_t$, with $v_t$ a known threshold value, then $\lim_{\epsilon\to 0^+} V(\hat{t} + \epsilon) = v_r$, with $v_r$ a reset value, generally just 0.
+
+Let the set $F_i$ represent $\{t : V_i(t) = v_t\}$.
+
+Then we can write the input current as such:
+
+$$
+I_i(t)= \sum_{j=1}^h w_{i,j} \sum_{\hat{t} \in F_j} \alpha(t - \hat{t})
+$$
+
+with $\alpha$ a kernel function which decays rather quickly. For our purposes, let's start with $\alpha(\Delta t) = a (\exp{\frac{-\Delta t}{b}} - \exp{\frac{-\Delta t}{c}}) \Theta(\Delta t)$ with $\Theta$ representing the heaviside function, constants $a, b, c$ known.
+
+See ``./python/lif\_neuron.py" for an implementation using forward Euler.
+
+
 \section{Model Description}
 
 Each neuron's potential is described as a second order ODE:
@@ -20,10 +45,11 @@ Each neuron's potential is described as a second order ODE:
 \begin{equation} \label{eq1}
 \begin{split}
 V''(t) & = -aV(t) + \\
-& |V'(t)| \exp(1/V(t))  + \\
- & b \mathbbm{1}_{V(t) > \alpha_1}\mathbbm{1}_{V(t) < \alpha_2}\mathbbm{1}_{V'(t) > 0} + \\
-& -b \mathbbm{1}_{V(t) > \alpha_2} + \\
-& -b \mathbbm{1}_{V(t) > \alpha_1} + \mathbbm{1}_{V'(t) < 0}
+ & b_1 \mathbbm{1}_{V(t) > \alpha_1}\mathbbm{1}_{V(t) < \alpha_2}\mathbbm{1}_{V'(t) > 0} + \\
+& -b_2 \mathbbm{1}_{V(t) > \alpha_2} + \\
+& -b_3 \mathbbm{1}_{V(t) > \alpha_3} \mathbbm{1}_{V'(t) < 0} \mathbbm{1}_{V(t) < \alpha_2} + \\
+& -b_4 \mathbbm{1}_{V(t) > \alpha_1} \mathbbm{1}_{V'(t) < 0} \mathbbm{1}_{V(t) < \alpha_3} + \\
+& -b_5 \mathbbm{1}_{V(t) < \alpha_4} 
 \end{split}
 \end{equation}
 
@@ -38,6 +64,12 @@ The third line causes acceleration when the potential crosses the threshold ($\a
 The fourth line decelerates when the potential reaches the peak ($\alpha_2$).
 
 The fifth line continues the deceleration throughout the spiking region (between $\alpha_1$ and $\alpha_2$).
+
+\section{Choosing Model Parameters}
+
+There are many parameters associated with this model that need to be decided upon.
+
+Let's begin with the $b_i$'s. It is first desireable that the velocity of the potential is approximately the same after the spike as it was before. This may be achieved by setting $b_1 \Delta_1 + b_3 \Delta_3 - b_4 \Delta_4 = 0$ where $\Delta_i$ is the corresponding distance that the force acts upon.
 
 
 \end{document}

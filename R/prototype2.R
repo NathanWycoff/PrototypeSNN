@@ -1,4 +1,5 @@
 #!/usr/bin/Rscript
+
 #  prototype2.R Author "Nathan Wycoff <nathanbrwycoff@gmail.com>" Date 06.02.2018
 
 ## A second prototype artificial neuron architecture.
@@ -53,7 +54,7 @@ for (t in ts) {
 
 par(mfrow=c(1,2))
 #plot(ts[1:2000], ys[1:2000])
-plot(ts, ys)
+plot(ts, ys, type = 'l')
 abline(h = alpha_1, col = 'green')
 abline(h = alpha_2, col = 'red')
 abline(h = alpha_3, col = 'blue')
