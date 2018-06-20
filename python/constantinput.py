@@ -22,7 +22,7 @@ u = TestFunction(W)
 
 der = v.dx(0)
 
-weak_form  =  der*u*dx + a*v*u*dx + I*u*dx
+weak_form  =  der*u*dx + a*v*u*dx - I*u*dx
 
 solve(weak_form == 0, v, bc)
 
