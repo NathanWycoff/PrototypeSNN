@@ -4,6 +4,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 ### A single neuron with constant input
 t_end = 20
@@ -35,6 +36,11 @@ for i, t in enumerate(ts[1:]):
 plt.plot(Vt)
 plt.axhline(v_thresh)
 plt.show()
+
+# Save a CSV to initialize a finite element solver.
+df = pd.DataFrame({'V' : Vt, 't' : ts})
+df.to_csv('./data/single_lif_fe.csv', index = False)
+
 
 ### A small network: 
 ## Neuron 1 receives input current, and has an excitatory connection to neuron 2, which similarly has an excitatory connection to neuron 3, which in turn has an inhibatory connection to neuron 1. This induces periodic behavior.
