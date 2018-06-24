@@ -87,11 +87,11 @@ F = [[] for _ in range(h)]
 def get_rhs(t, V):
     ret = np.empty(h)
     #Neuron 1 get the input current, as well as an inhibitory current from N3.
-    ret[0] = I(t) + W[2,0] * sum([alpha(t - tf) for tf in F[2]])
+    ret[0] = I(t) + W[2,0] * sum([alpha(t - tf) for tf in F[2]]) - V[0]
     # Neuron 2 is excited by N1 and in turn excites N3
-    ret[1] = W[0,1] * sum([alpha(t - tf) for tf in F[0]])
+    ret[1] = W[0,1] * sum([alpha(t - tf) for tf in F[0]]) - V[1]
     # Neuron 3 is excited by N2 and inhibits N1
-    ret[2] = W[1,2] * sum([alpha(t - tf) for tf in F[1]])
+    ret[2] = W[1,2] * sum([alpha(t - tf) for tf in F[1]]) - V[2]
 
     return(ret)
 
