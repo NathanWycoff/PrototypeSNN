@@ -20,11 +20,15 @@ bc = DirichletBC(W, V0, boundary)
 v = Function(W)
 u = TestFunction(W)
 
-der = v.dx(0)
 
-weak_form  =  der*u*dx + a*v*u*dx - I*u*dx
+
+derv = v.dx(0)
+
+weak_form  =  derv*u*dx + a*v*u*dx - I*u*dx
 
 solve(weak_form == 0, v, bc)
 
+p=Point(1.39)
+print(v(p))
 dolfin.plot(v)
 plt.show()

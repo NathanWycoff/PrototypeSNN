@@ -33,6 +33,7 @@ class analytic_1neuron(object):
         """
         return self.subthresh_pot(t % self.fire_freq)
 
-
+# npot = analytic_1neuron(4, 3)
+# print(npot.fire_freq/range(20))
 
 
