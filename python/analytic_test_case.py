@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #  python/analytic_test_case.py Author "Nathan Wycoff <nathanbrwycoff@gmail.com>" Date 07.01.2018
-
+import numpy as np
+import warnings
 
 class analytic_1neuron(object):
     """
@@ -31,4 +32,7 @@ class analytic_1neuron(object):
         Evaluate the membrane potential at time t.
         """
         return self.subthresh_pot(t % self.fire_freq)
+
+
+
 
