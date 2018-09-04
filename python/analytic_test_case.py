@@ -5,10 +5,6 @@ import numpy as np
 import warnings
 from scipy.optimize import minimize
 
-class cool(object):
-    pass
-self = cool()
-
 class analytic_1neuron(object):
     """
     Simulate a single neuron analytically for constant input, constant threshold.
@@ -107,7 +103,7 @@ class analytic_2neuron(object):
     t_end = 20
 
     npot = analytic_2neuron(I_0, V_t, tau, w)
-    npot(t_end) 
+    ret = npot(t_end) 
     """
     def __init__(self, I_0, V_t, tau = 0.001, w = 1):
         self.subthresh_pot = lambda t: I_0 * (1 - np.exp(-t))
