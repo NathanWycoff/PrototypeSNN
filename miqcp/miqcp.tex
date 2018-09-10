@@ -1,0 +1,105 @@
+%        File: miqcp.tex
+%     Created: Sun Sep 09 02:00 PM 2018 E
+% Last Change: Sun Sep 09 02:00 PM 2018 E
+%
+\documentclass[a4paper]{article}
+
+\usepackage{amsmath}
+\title{A Mixed Integer Quadratically Constrained Representation}
+\author{Nathan Wycoff}
+
+\begin{document}
+
+\maketitle
+
+\section{Review}
+
+The Integrate and Fire neuron has the following form, for some neuron, call it $n$:
+
+\begin{equation}
+    V'(t) = \sum_{i \in \mathcal{P}_{_n}} w_i \sum_{t_f \in \mathcal{F}_{i}} \alpha(t - t_f)
+    \label{stdif}
+\end{equation}
+
+, with $\mathcal{P}_n$ being the set of presynaptic neurons, that is, neurons connected to neuron $n$, and $\mathcal{F}_i$ being the set containing the firing times of neuron $i$. Whenever $V(t) = \nu$, we have that $V(t + \epsilon) \to 0$ as $\epsilon$ vanishes. Such $t$ will be called $t^a$, for ''actual firing time".
+
+
+\section{Optimization Approach}
+
+The goals are twofold: firstly, to simulate the ODE system, and secondly, given some desired firing time $t^d_i$, to align actual and desired firing times in some sense, such as by minimizing squared deviations $\sum_{i} (t^d_i - t^a_i)^2$, leading to a quadratic objective, or absolute deviations, leading to a linear objective.
+
+
+We would like for the constraints to be simple enough that enormous scaled systems may be solved. In this case, the constraints are simply that the times results from our ODE, that is, that the potential at times $t^a$ (which I am treating as a decision variable) is at the firing threshold $\nu$: 
+
+\begin{equation}
+    V(t^a_i) = \nu \forall i \iff \int_{0}^{t^a_i} \sum_{i \in \mathcal{P}_{_n}} w_i \sum_{t_f \in \mathcal{F}_{i}} \alpha(t - t_f) dt = \nu \forall i
+    \label{origconstr}
+\end{equation}
+
+We will choose the postsynaptic kernel function $\alpha$, which tells us how an upstream neuron influences a downtstream neuron, to be as simple as possible:
+
+  \[ \alpha(t - t_f) =\begin{cases} 
+      0 & t - t_f \leq 0 \\
+      1 & 0 \leq t - t_f \leq \tau \\
+      0 & t - t_f \geq \tau
+   \end{cases}
+\]
+
+that is, it's simply the characteristic function of the interval $[0, \tau]$, where $\tau$ is a constant (for now assumed known) giving the firing duration.
+
+The integral is therefore simply a piecewise linear function, and we obtain the following constraint (for simplicity, we will now concern ourselves only with two neurons, and the potential of the upstream neuron. Each neuron will only fire once. These assumptions are not without loss of generality, as we will see later):
+
+\begin{equation}
+    w (t^a - t_f) \mathbf{I}_{[t^a - t_f \in [0, \tau]]} + 
+    \tau \mathbf{I}_{[t^a - t_f > \tau]} = \nu 
+    \label{indconstr}
+\end{equation}
+
+With the introduction of three binary variables, this constraint can be quadraticized. 
+
+\begin{equation}
+    -L b_1 \leq t^a - t_f
+    \label{bin1}
+\end{equation}
+\begin{equation}
+    L b_2 \geq t^a - t_f
+    \label{bin2}
+\end{equation}
+\begin{equation}
+    L b_3 \geq t^a - t_f - \tau
+    \label{bin3}
+\end{equation}
+
+\begin{equation}
+    b_1 + b_2 + b_3 = 1
+    \label{bintoto}
+\end{equation}
+
+\begin{equation}
+    b_2 (t^a - t_f) + b_3 \tau  = \mu \nu  
+    \label{quadconstr}
+\end{equation}
+
+where $\mu = 1/w$.
+
+Solving the forward problem is equivalent to finding a feasible solution, while solving the inverse problem is finding the optimal solution. I successfully implemented this 1 neuron program in Julia using JuMP and Gurobi.
+
+
+
+\section{Challenges of Scale}
+
+This model has a lot of potential because it allows us to symoultaneously solve the forward and inverse problems. However, it's not clear to me how to scale this beyond 1 neuron.
+
+The difficulty comes in with the $w$ term in the constraint, which is forming a 3rd degree term before I reparameterize it with $\mu$. This is no longer possible with more than 1 neuron. However, we should be able to solve the forward model, as $w$ is fixed in that case. This would give us sensitivities we need to do gradient descent.
+
+Thoughts:
+
+\begin{enumerate}
+    \item If we fix all but 1 weight for each incoming connection, we may be able to solve the program, and find an overall solution by alternating which weight is free. Such an approach is best for models with few incoming connections, which is not the case for popular neural archetectures. But maybe we can develop new architectures?
+    \item It may be possible to have a different $\tau$ for each connection and optimize those instead of the weights.
+    \item Constraining the weights to be binary may be interesting
+\end{enumerate}
+
+\end{document}
+
+
