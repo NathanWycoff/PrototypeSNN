@@ -8,7 +8,7 @@ m = Model(solver=GurobiSolver())
 
 # Params
 L = 10
-tau = 10
+tau = 1
 tf = 1
 nu = 1
 td = 1.1
