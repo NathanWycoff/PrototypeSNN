@@ -14,7 +14,8 @@ def bd_func(shift):
 
 
 val_list=[]
-
+multiplier_lag = 1.0
+multiplier_aug = 1.0
 v_current=None
 t_max=20
 set_log_active(False)
