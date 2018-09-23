@@ -117,3 +117,51 @@ status = solve(m)
 println("Objective value: ", getobjectivevalue(m))
 println("ta1 = ", getvalue(ta1))
 println("ta2 = ", getvalue(ta2))
+
+
+########################### 
+########################### 
+########################### 
+########################### How do we deal with an unknown number of spikes occuring?
+
+m = Model(solver=GurobiSolver())
+
+# Params
+L = 10
+tau = 1
+tf = 1
+nu = 1
+td = 1.1
+w = 1
+
+# DV
+@variable(m, b1, Bin)
+@variable(m, b2, Bin)
+@variable(m, b3, Bin)
+
+@variable(m, ta)
+
+# obj
+@objective(m, Min, (ta - td)^2)
+
+# Constr
+@constraint(m, b1 * (ta - tf) <= 0)
+@constraint(m, b2 * (ta - tf) >= 0)
+@constraint(m, b2 * (ta - tf) <= tau)
+@constraint(m, b3 * (ta - tf - tau) >= 0)
+
+@constraint(m, b1 + b2 + b3 == 1)
+
+@constraint(m, w * (b2 * (ta - tf) + b3 * tau) == nu)
+
+print(m)
+
+# Solve with Gurobi
+status = solve(m)
+
+# Solution
+println("Objective value: ", getobjectivevalue(m))
+println("ta = ", getvalue(ta))
+println("b1 = ", getvalue(b1))
+println("b2 = ", getvalue(b2))
+println("b3 = ", getvalue(b3))

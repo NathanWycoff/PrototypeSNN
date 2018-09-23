@@ -26,7 +26,7 @@ td = 1.1
 
 # Constr
 @constraint(m, -L * b1 <= ta - tf)
-@constraint(m, L * b2 >= ta - tf)
+@constraint(m, L * (b2 + b3) >= ta - tf)
 @constraint(m, L * b3 >= ta - tf - tau)
 @constraint(m, b1 + b2 + b3 == 1)
 
