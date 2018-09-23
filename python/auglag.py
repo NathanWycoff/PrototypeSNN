@@ -6,8 +6,6 @@ from scipy.optimize import *
 import time
 
 
-
-
 def bd_func(shift):
 
 	def boundary(x):
@@ -30,9 +28,10 @@ def cost(t,tprev,alpha,v_thresh,mu):
 	s1=t[1]
 	s2=t[2]
 	#print(t1)
+	print(mu)
 	v_thresh = Constant(str(v_thresh))
 	#print(tprev,t1)
-	mesh = IntervalMesh(256, tprev, t1)
+	mesh = IntervalMesh(64, tprev, t1)
 	W = FunctionSpace(mesh,'CG',1)
 	bc = DirichletBC(W, V0, bd_func(tprev))
 	v = Function(W)
@@ -49,8 +48,8 @@ def cost(t,tprev,alpha,v_thresh,mu):
 	obj1 =  (v_current-v_thresh)*dx(domain=mesh)
 	obj2 = v_current*dx(domain=mesh)
 	val = (mu/2.0)*(assemble(obj1)+s1)**2 + (mu/2.0)*(-assemble(obj2)+s2)**2 - t1
-	print("final value")
-	print(v_current(t1))
+	#print("final value")
+	#print(v_current(t1))
 	#print("cost" + str(mu*(assemble(obj1)+s1)**2 + mu*(-assemble(obj2)+s2)**2))
 	# print("---")
 	# print(tprev)
@@ -69,6 +68,7 @@ def cont1(v_thresh):
 def grad(t,tprev,alpha,v_thresh,mu):
 	global v_current
 	global mesh
+	global k_counter
 	V0 = Constant("0.0")
 	a= Constant("0.0")
 	I = Constant("1.0")
@@ -76,6 +76,7 @@ def grad(t,tprev,alpha,v_thresh,mu):
 	t1=t[0]
 	s1=t[1]
 	s2=t[2]
+	mu=mu*k_counter
 	obj1 = (v_current-v_thresh)*dx(domain=mesh)
 	obj2 = (v_current)*dx(domain=mesh)
 	int1=assemble(obj1)
@@ -105,7 +106,7 @@ alpha=.000001
 v_thresh=1.5
 t_hit=  []
 counter=1
-mu=10000.0
+mu=10.0
 shift = .000001
 while t_cur<=20:
 	if(t_cur+shift <20):
@@ -116,13 +117,14 @@ while t_cur<=20:
 		val = t_cur
 
 		t_cur = res.x[0]
-		# print(res.x)
+		print(res.x[0])
 		#print(t_cur)
 		if(t_cur == t_max):
 			break
 		t_hit.append(t_cur)
 		#print(t_cur)
 		counter+=1
+		k_counter=5
 	else:
 		t_hit.append(20)
 		break;
