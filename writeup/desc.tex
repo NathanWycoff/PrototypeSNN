@@ -39,6 +39,12 @@ See ``./python/lif\_neuron.py" for an implementation using forward Euler.
 
 Initial values are usually chosen arbitrarily. For our purposes, we will set $V_0 = v_r$, and further $v_r = 0$.
 
+\subsection{The Inverse Problem}
+
+Spiking neuron models have many uses. Our focues will be on using them to perform statistical computation to solve learning problems: classification, regression, planning, etc. This involves presenting the network with an input, and demanding that it produce as close as possible to a prespecified spike train.
+
+That is to say, some subset of the network will be called ``output nerons". For each of these output neurons $i$, there will be a list of desired spike times $t^d_{i,f}$. the inverse problem is to discover weights $w_{i,j}$ as described above, throughout the \textit{entire network} (even though we are only monitoring output neurons), such that the spike times of output neurons is close to the desired spike times in some sense. For now, let's use sum of squared differences, so the objective is $\sum_{i \in \mathcal{O}} \sum_{f \in \mathcal{D}_i} (t^a_{i,f} - t^d_{i,f})^2$, where $\mathcal{O}$ is the index set of output neurons, and $\mathcal{D}_i$ is the index set of firing times for neuron $i$. 
+
 \section{Model Description}
 
 Each neuron's potential is described as a second order ODE:
