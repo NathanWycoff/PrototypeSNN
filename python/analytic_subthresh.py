@@ -129,3 +129,62 @@ while current_t < t_end:
             print current_t
             ft2.append(current_t)
             its2 += 1
+
+### One input, two hidden, one output
+nu = 3# Firing threshold
+w01 = 1# Synaptic weight connections
+w02 = 1
+w13 = 1# Synaptic weight connections
+w23 = 1
+fire_thresh = 1e-4# Within this counts as having fired
+t_end = 20 # Length of simulation
+obj = lambda x: -x[0]
+
+n_neur = 3
+
+tau = 1# Time constant in PSP
+# Integrated postsynaptic potential kernel
+ipsp = lambda dt: (dt > 0) * (tau - tau * np.exp(-dt / tau))
+
+fti = np.linspace(1, t_end, 10)
+
+thresh1 = lambda x: \
+        -(w01 * sum([ipsp((x[1] + current_t) - tf) for tf in fti]) - (its[0]) * nu)
+thresh2 = lambda x: \
+        -(w02 * sum([ipsp((x[2] + current_t) - tf) for tf in fti]) - (its[1]) * nu)
+thresh3 = lambda x: \
+        -(w13 * sum([ipsp((x[3] + current_t) - tf) for tf in fts[0]]) + 
+                w23*sum([ipsp((x[3] + current_t) - tf) for tf in fts[1]]) - (its[2]) * nu)
+lin1 = lambda x: -(x[0] - x[1])
+lin2 = lambda x: -(x[0] - x[2])
+lin3 = lambda x: -(x[0] - x[3])
+
+consts = [thresh1, thresh2, thresh3, lin1, lin2, lin3]
+constd = [{'type' : 'ineq', 'fun' : const} for const in consts]
+
+# The decision variable vector x is broken down as such:
+# x = [m, ta1, ta2, ta3]
+current_t = 0
+fts = [[] for _ in range(n_neur)]
+its = [1 for _ in range(n_neur)]
+while current_t < t_end:
+    bound = [0, t_end - current_t]
+
+    # Do the actual optim
+    ret = minimize(obj, [1,1,1,1], method = 'SLSQP', \
+            bounds = [bound for _ in range(n_neur+1)], constraints = constd)
+
+    # Figure out who fired (1 indexed)
+    x = ret['x']
+    rhs = [const(x) for const in consts]
+    thresh_rhs = rhs[0:(n_neur)]
+
+
+    fired_neurs = [i for i,x in enumerate(thresh_rhs)if x < fire_thresh] 
+
+    current_t = ret['x'][0] + current_t
+    for neur in fired_neurs:
+        print "%i fired!"%neur
+        print current_t
+        fts[neur].append(current_t)
+        its[neur] += 1
