@@ -4,7 +4,6 @@
 
 ## An arbitrary topology SRM model which allows for changing weights at each iteration.
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -24,6 +23,24 @@ def W_func_sim(N, Ni, W, U, BETA, v_thresh = 3, v_reset = 0, t_eps = 1e-2, t_end
     :param v_reset: A real scalar: what is the initial potential of each neuron, as well as what the potential is reset to after a firing event.
     :param t_eps: The time stepping constant.
     :param t_end: The length of the simulation. The simulation thus involves t_end / t_eps many iterations.
+
+    Returns a dictionary with elements Fcal, a list of lists, of each list giving the firing times of a particular neuron, and Vs, a numpy array giving the potential of each neuron at each time step. Neurons are represented as columns, and time points as rows.
+
+    Example useage:
+    # Constant weight matrices and residual functionals
+    np.random.seed(123)
+    N = 3# Number of neurons
+    Ni = 1# Number of input neurons
+    W_0 = np.random.normal(size=[N,N])
+    W = lambda t: W_0
+    U_0 = np.abs(np.random.normal(size=[Ni,N]))
+    U = lambda t: U_0
+
+    BETA = lambda t: np.zeros(shape=[Ni]) + t
+
+    ret = W_func_sim(N, Ni, W, U, BETA)
+    ret['Fcal']#Prints out firing times
+    ret['Vs']# Prints out trace of electric potential.
     """
 
     # Fixed postsynaptic functions for now.
@@ -68,16 +85,3 @@ def W_func_sim(N, Ni, W, U, BETA, v_thresh = 3, v_reset = 0, t_eps = 1e-2, t_end
     ret = {'Fcal' : Fcal, 'Vs' : Vs}
     return ret
 
-## Example inputs
-# Define a weight matrix
-np.random.seed(123)
-N = 3# Number of neurons
-Ni = 1# Number of input neurons
-W_0 = np.random.normal(size=[N,N])
-W = lambda t: W_0
-U_0 = np.abs(np.random.normal(size=[Ni,N]))
-U = lambda t: U_0
-
-BETA = lambda t: np.zeros(shape=[Ni]) + t
-
-W_func_sim(W, U, BETA)
