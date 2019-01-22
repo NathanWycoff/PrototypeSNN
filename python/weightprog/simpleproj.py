@@ -25,8 +25,8 @@ W = FunctionSpace(mesh,'CG',1)
 bc = DirichletBC(W, V0, bd_func(0.0))
 v = Function(W)
 u = TestFunction(W)
-#weight= interpolate(Expression('cos(x[0])-sin(x[0])', degree=2), W)
-weight= interpolate(Expression('0.0', degree=2), W)
+weight= interpolate(Expression('cos(x[0])-sin(x[0])+.0001', degree=2), W)
+#weight= interpolate(Expression('1.0', degree=2), W)
 
 
 
@@ -39,10 +39,10 @@ weak_form  =  derv*u*dx -v*u*dx  - weight*u*dx
 Jac = derivative(weak_form, v, TrialFunction(W))
 		
 solve(weak_form==0,v, J=Jac,bcs=bc)
-sin = Expression("sin(x[0])",degree=5)
+sin = Expression("sin(x[0])",degree=2)
 
-
-J = .5*(v-sin)**2*dx + .000001*weight**2*dx
+J = .5*(v-sin)**2*dx + .01*weight**2*dx
+#J = .5*(v-sin)**2*dx + .01*weight.dx(0)**2*dx
 J=assemble(J)
 
 
